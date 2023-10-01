@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-const String _BaseURL = "http://45.117.177.90:5005";
+const String _BaseURL = "http://165.232.166.240:5000";
 
 class ApiClient {
   Future<Map<String, dynamic>> checkEmail(String email) async {

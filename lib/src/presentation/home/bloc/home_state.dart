@@ -34,6 +34,12 @@ class CheckingTwoFASuccessState extends HomeState {
   CheckingTwoFASuccessState(this.response);
 }
 
+class CheckingTwoFAFailState extends HomeState {
+  final response;
+
+  CheckingTwoFAFailState(this.response);
+}
+
 //add to firebase
 
 class AddToFirebaseSuccessState extends HomeState {
